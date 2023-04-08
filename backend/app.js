@@ -7,13 +7,14 @@ const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const router = require('./routes');
 const auth = require('./middlewares/auth');
+const { MONGO_URL } = require('./config');
 
+const { PORT = 3000 } = process.env;
 const app = express();
 
 app.use(bodyParser.json());
 const { validationCreateUser, validationLogin } = require('./middlewares/validation');
 
-const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 const { createUsers, login } = require('./controllers/auth');
 app.use(cors());
 app.use(helmet());
@@ -37,6 +38,7 @@ app.use(auth);
 app.use(router);
 async function connect() {
   try {
+    await mongoose.connect(MONGO_URL);
     await mongoose.set('strictQuery', false);
     await mongoose.connect('mongodb://localhost:27017/mestodb');
     console.log(`App connected ${MONGO_URL}`);
