@@ -7,6 +7,6 @@
 Адрес репозитория: https://github.com/...
 
 ## Ссылки на проект
-### Frontend:https://juzoo.suzuya.nomoredomains.monster
-### Backend:https://api.juzoo.suzuya.nomoredomains.monster
+### Frontend:http://juzoo.suzuya.nomoredomains.monster
+### Backend:http://api.juzoo.suzuya.nomoredomains.monster
 ### Публичный IP-адрес:158.160.19.20
