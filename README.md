@@ -8,8 +8,8 @@
 
 ## Ссылки на проект
 
-IP-адрес x.x.x.x
+IP-адрес 158.160.19.20
 
-Frontend https://...
+Frontend https://juzoo.suzuya.nomoredomains.monster
 
-Backend https://...
+Backend https://api.juzoo.suzuya.nomoredomains.monster
