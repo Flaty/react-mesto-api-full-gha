@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
@@ -14,7 +15,7 @@ const { validationCreateUser, validationLogin } = require('./middlewares/validat
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 const { createUsers, login } = require('./controllers/auth');
-
+app.use(cors());
 app.use(helmet());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
