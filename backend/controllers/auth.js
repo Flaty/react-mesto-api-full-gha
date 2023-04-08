@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const BadRequestError = require('../errors/bad-request-errors');
 const ConflictError = require('../errors/conflict-error');
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.createUsers = (req, res, next) => {
   const {
@@ -38,10 +39,10 @@ module.exports.login = (req, res, next) => {
   return User
     .findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret-key', {
         expiresIn: '7d',
       });
-      res.send({ token });
+      res.status(200).send({ token });
     })
     .catch(next);
 };
