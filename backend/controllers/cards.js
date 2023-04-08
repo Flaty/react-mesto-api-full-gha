@@ -7,6 +7,7 @@ const ForbiddenError = require('../errors/forbidden-error');
 module.exports.getCards = (req, res, next) => {
   Card
     .find({})
+    .populate(['likes', 'owner'])
     .then((cards) => res.send(cards))
     .catch(next);
 };
@@ -28,6 +29,7 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   return Card.findById(cardId)
+    .populate(['likes', 'owner'])
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Пользователь не найден');
@@ -35,7 +37,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card.owner.equals(req.user._id)) {
         return next(new ForbiddenError('Вы не можете удалить чужую карточку'));
       }
-      return card.remove().then(() => res.send({ message: 'Карточка успешно удалена' }));
+      return card.remove().then(() => res.send({ message: 'Карточка успешно удалена' }, card));
     })
     .catch(next);
 };
@@ -47,11 +49,12 @@ module.exports.getLikes = (req, res, next) => {
       { $addToSet: { likes: req.user._id } },
       { new: true },
     )
+    .populate(['likes', 'owner'])
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Пользователь не найден');
       }
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -68,11 +71,12 @@ module.exports.deleteLikes = (req, res, next) => {
       { $pull: { likes: req.user._id } },
       { new: true },
     )
+    .populate(['likes', 'owner'])
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Запрос не найден');
       }
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
