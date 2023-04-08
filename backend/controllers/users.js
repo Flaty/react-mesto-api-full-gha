@@ -26,7 +26,7 @@ module.exports.getlUserById = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Запрошенный пользователь не найден');
       }
-      res.status(200).send({ data: user });
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
