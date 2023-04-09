@@ -15,15 +15,16 @@ module.exports.getCards = (req, res, next) => {
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card
-    .create({ name, link, owner: req.user._id })
-    .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки'));
-      } else {
-        next(err);
-      }
-    });
+  .create({ name, link, owner })
+  .then((card) => Card.populate(card, ['likes', 'owner'])
+    .then((populatedCard) => res.status(200).send(populatedCard)))
+  .catch((err) => {
+    if (err.name === 'ValidationError') {
+      next(new BadRequestError('Переданы некорректные данные при создании карточки'));
+    } else {
+      next(err);
+    }
+  });
 };
 // delete Card
 module.exports.deleteCard = (req, res, next) => {
@@ -37,7 +38,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card.owner.equals(req.user._id)) {
         return next(new ForbiddenError('Вы не можете удалить чужую карточку'));
       }
-      return card.remove().then(() => res.send({ message: 'Карточка успешно удалена' }, card));
+      return card.remove().then(() => res.send({ message: 'Карточка успешно удалена' }));
     })
     .catch(next);
 };
