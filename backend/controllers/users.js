@@ -2,7 +2,7 @@ const BadRequestError = require('../errors/bad-request-errors');
 const NotFoundError = require('../errors/not-found-errors');
 const User = require('../models/user');
 
-module.exports.getUserInfo = (req, res, next) => {
+module.exports.getUser = (req, res, next) => {
   User
     .find({})
     .then((users) => res.send(users))
@@ -10,7 +10,7 @@ module.exports.getUserInfo = (req, res, next) => {
 };
 
 // get users
-module.exports.getUsers = (req, res, next) => {
+module.exports.getUserInfo = (req, res, next) => {
   const { _id } = req.user;
   User
     .find({ _id })
