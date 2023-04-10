@@ -26,6 +26,8 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+app.use(helmet());
+app.use(limiter);
 app.use(requestLogger); 
 app.post('/signin', validationLogin, login);
 app.post('/signup', validationCreateUser, createUsers);
@@ -36,8 +38,6 @@ app.get('/crash-test', () => {
   }, 0);
 });
 app.use(router);
-app.use(helmet());
-app.use(limiter);
 app.use(errorLogger); 
 app.use(corsErr); 
 async function connect() {
