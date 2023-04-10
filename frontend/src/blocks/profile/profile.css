@@ -1,15 +1,20 @@
 .profile {
-    padding: 40px 200px 0 200px;
-    display: flex;
-    width: calc(100% - 400px);
+  max-width: 100%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, max-content) 1fr;
+  padding-top: 40px;
 }
-
-@media screen and (max-width: 1023px) {
-    .profile {
-        flex-direction: column;
-        width: calc(100% - (19px + 19px));
-        padding: 42px 19px 0 19px;
-        align-items: center;
-        justify-content: space-between;
-    }
+@media (max-width: 820px) {
+  .profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 38px;
+  }
+}
+@media (max-width: 425px) {
+  .profile {
+    padding: 42px 19px 0 19px;
+  }
 }

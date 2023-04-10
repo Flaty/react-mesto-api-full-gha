@@ -1,21 +1,13 @@
 .footer__text {
-    width: 100%;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 18px;
-    line-height: 22px;
-    color: #545454;
-    margin: 0;
+  color: #545454;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.2;
+  margin: 0;
+  padding: 0;
 }
-
-@media screen and (max-width: 1023px) {
-    .footer__text {
-        text-align: start;
-    }
-}
-
-@media screen and (max-width: 500px) {
-    .footer__text {
-        font-size: 14px;
-    }
+@media (max-width: 320px){
+  .footer__text {
+    font-size: 14px;
+  }
 }

@@ -1,39 +1,65 @@
-import React, {useContext} from 'react';
-import trash from "../images/Trash.svg";
-import CurrentUserContext from "../contexts/CurrentUserContext";
+import like from "../images/Vector3.svg";
+import trash from "../images/trash.svg";
+import React from "react";
+import { CurrentUserContext } from "../context/CurrentUserContext.js";
 
-const hidden = {
-    display: 'none'
+function Card(card) {
+  const currentUser = React.useContext(CurrentUserContext);
+  // мусорка
+  // const isOwn = card.owner === currentUser._id;
+  const isOwn = currentUser._id === card.owner._id;
+  const cardDeleteButtonClassName = `element__button-trash ${
+    isOwn ? "element__button-trash_type_active" : ""
+  }`;
+  // лайк
+  //const isLiked = card.likes.some(id => id === currentUser._id);
+  const isLiked = card.likes.some(i => i._id === currentUser._id);
+  const cardLikeButtonClassName = `element__like ${
+    isLiked ? "element__like_active" : ""
+  }`;
+  // картинка
+  function handleClick() {
+    card.onCardClick(card);
+  }
+  // лайк
+  function handleLikeClick() {
+    card.onCardLike(card);
+  }
+  // удаление
+  function handleDeleteClick() {
+    card.onCardDelete(card);
+  }
+  return (
+    <div className="element">
+      <img
+        className="element__image"
+        src={card.link}
+        alt={card.name}
+        onClick={handleClick}
+      />
+      <div className="element__text">
+        <h2 className="element__title">{card.name}</h2>
+        <button
+          type="button"
+          className="element__button-like"
+          onClick={handleLikeClick}
+        >
+          <img
+            src={like}
+            alt="Иконка лайка"
+            className={cardLikeButtonClassName}
+          />
+          <div className="element__like-counter">{card.likes.length}</div>
+        </button>
+      </div>
+      <button
+        type="reset"
+        className={cardDeleteButtonClassName}
+        onClick={handleDeleteClick}
+      >
+        <img src={trash} alt="Иконка мусорки" className="element__trash" />
+      </button>
+    </div>
+  );
 }
-
-const Card = ({ image, myKey, title, likesCount, onCardClick, card, onCardLike, onCardDelete }) => {
-    const user = useContext(CurrentUserContext)
-
-    const isOwn = card.owner._id !== user._id;
-
-    const isLiked = card.likes.some(i => i._id === user._id);
-
-    const cardLikeButtonClassName = `card__item-like-button ${isLiked ? 'card__item-like-button_active' : ''}`
-
-    return (
-        <li className="card__item" key={myKey}>
-            <img src={trash} alt="Корзина"
-                 className="card__item-thrash" style={isOwn ? hidden : null} onClick={() => {
-                     onCardDelete(card)
-            }} />
-            <img src={image} alt={title}
-                 className="card__item-image" onClick={() => onCardClick(card)} />
-            <div className="card__item-description">
-                <h2 className="card__item-title">{title}</h2>
-                <div className="card__item-like-container">
-                    <button type="button" className={cardLikeButtonClassName} onClick={() => {
-                        onCardLike(card)
-                    }}/>
-                    <p className="card__item-like-counter">{likesCount}</p>
-                </div>
-            </div>
-        </li>
-    );
-};
-
 export default Card;

@@ -1,36 +1,27 @@
-const BadRequestError = require('../errors/bad-request-errors');
-const NotFoundError = require('../errors/not-found-errors');
-const User = require('../models/user');
+const BadRequest = require('../errors/bad-request-errors'); 
+const NotFound = require('../errors/not-found-errors'); 
+const userSchema = require('../models/user');
 
-module.exports.getUser = (req, res, next) => {
-  User
+
+module.exports.getUsers = (req, res, next) => {
+  userSchema
     .find({})
     .then((users) => res.send(users))
     .catch(next);
 };
 
-// get users
-module.exports.getUserInfo = (req, res, next) => {
-  const { _id } = req.user;
-  User
-    .find({ _id })
-    .then((user) => res.status(200).send({ data: user[0] }))
-    .catch(next);
-};
-
-module.exports.getlUserById = (req, res, next) => {
+module.exports.getUserById = (req, res, next) => {
   const { userId } = req.params;
-  User
-    .findById(userId)
+  userSchema.findById(userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Запрошенный пользователь не найден');
+        throw new NotFound('Пользователь не найден');
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Неверный идентификатор'));
+        next(new BadRequest('Передан некорретный Id'));
         return;
       }
       next(err);
@@ -39,48 +30,54 @@ module.exports.getlUserById = (req, res, next) => {
 
 module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
-  User
-    .findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+  userSchema
+    .findByIdAndUpdate(
+      req.user._id,
+      { name, about },
+      { new: true, runValidators: true },
+    )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Идентификатор пользователя не найден');
+        throw new NotFound('Пользователь не найден');
       }
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('При обновлении профиля переданы неверные данные'));
-        return;
-      }
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Идентификатор пользователя неверен'));
-        return;
-      }
-      next(err);
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(BadRequest('Переданы некорректные данные при обновлении профиля.'));
+      } else next(err);
     });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  const userId = req.user._id;
+  userSchema
+    .findByIdAndUpdate(
+      req.user._id,
+      { avatar },
+      { new: true, runValidators: true },
+    )
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequest('Переданы некорректные данные при обновлении профиля.'));
+      } else next(err);
+    });
+};
 
-  User
-    .findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+module.exports.getCurrentUser = (req, res, next) => {
+  userSchema.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError(`Пользователь с идентификатором ${userId} не найден`);
+        throw new NotFound('Пользователь не найден');
       }
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Invalid data passed when updating profile'));
-        return;
-      }
       if (err.name === 'CastError') {
-        next(new BadRequestError('Идентификатор пользователя неверен'));
-        return;
-      }
-      next(err);
+        next(BadRequest('Переданы некорректные данные'));
+      } else if (err.message === 'NotFound') {
+        next(new NotFound('Пользователь не найден'));
+      } else next(err);
     });
 };

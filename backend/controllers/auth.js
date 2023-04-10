@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const User = require('../models/user');
-const BadRequestError = require('../errors/bad-request-errors');
-const ConflictError = require('../errors/conflict-error');
+const userSchema = require('../models/user');
+const BadRequest = require('../errors/bad-request-errors'); 
+const ConflictError = require('../errors/conflict-error'); 
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.createUsers = (req, res, next) => {
@@ -10,7 +11,7 @@ module.exports.createUsers = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   bcrypt.hash(password, 10).then((hash) => {
-    User
+    userSchema
       .create({
         name, about, avatar, email, password: hash,
       })
@@ -26,20 +27,19 @@ module.exports.createUsers = (req, res, next) => {
           return next(new ConflictError('Пользователь с таким email уже существует'));
         }
         if (err.name === 'ValidationError') {
-          return next(new BadRequestError('Некорректные данные'));
+          return next(new BadRequest('Некорректные данные'));
         }
         next(err);
       });
   })
     .catch(next);
 };
-
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User
+  return userSchema
     .findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret-key', {
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', {
         expiresIn: '7d',
       });
       res.status(200).send({ token });
