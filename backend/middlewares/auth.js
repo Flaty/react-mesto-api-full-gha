@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
     return;
   }
 
-  req.user = payload; 
+  req.user = payload;
 
-  next(); 
+  next();
 };
