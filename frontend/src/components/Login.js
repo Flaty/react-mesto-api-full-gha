@@ -1,56 +1,36 @@
-import React, { useState } from "react";
-import { Redirect } from "react-router-dom";
+import React, {useState} from 'react';
 
-function Login({ isLoggedIn, onLogin }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  // меняем инпут
-  function handleEmailChange(evt) {
-    setEmail(evt.target.value);
+function Login({ onAuthorize }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  function handleChangeEmail(e) {
+    setEmail(e.target.value);
   }
-  // меняем инпут
-  function handlePasswordChange(evt) {
-    setPassword(evt.target.value);
+
+  function handleChangePassword(e) {
+    setPassword(e.target.value);
   }
-  // отправляем форму
+
+
   function handleSubmit(e) {
     e.preventDefault();
-    onLogin(email, password);
-  }
-
-  if (isLoggedIn) {
-    return <Redirect to="/" />;
+    onAuthorize(email, password);
   }
 
   return (
-    <form onSubmit={handleSubmit} className="authen__form" noValidate>
-      <h2 className="authen__title">Вход</h2>
-      <input
-        id="email"
-        name="email"
-        type="email"
-        placeholder="Email"
-        value={email}
-        className="authen__input"
-        onChange={handleEmailChange}
-        autoComplete="off"
-      />
-
-      <input
-        id="password"
-        name="password"
-        type="password"
-        placeholder="Пароль"
-        value={password}
-        className="authen__input"
-        onChange={handlePasswordChange}
-        autoComplete="off"
-      />
-
-      <button type="submit" className="authen__btn">
-        Войти
-      </button>
-    </form>
-  );
+    <div className="auth">
+      <div className="auth__container">
+        <form name="login" className="auth__form" id="login-form" noValidate onSubmit={handleSubmit}>
+          <h2 className="auth__title">Вход</h2>
+          <input name="login-email" className="auth__input" id="login-email-input" type="text" placeholder="Email" value={email} onChange={handleChangeEmail} />
+          <input name="login-password" className="auth__input" id="login-password-input" type="password" placeholder="Пароль" value={password} onChange={handleChangePassword} />
+          <button type="submit" className="auth__button-save" id="auth-button-save-login">Войти</button>
+          <button type="button" className="auth__button" id="auth-button-login" style={{ cursor: 'auto' }}></button>
+        </form>
+      </div>
+    </div>
+  )
 }
+
 export default Login;

@@ -1,7 +1,10 @@
-class ConflictError extends Error {
+const { CONFLICT_ERROR } = require('./statusCode');
+
+class Conflicted extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = 409;
+    this.statusCode = CONFLICT_ERROR;
   }
 }
-module.exports = ConflictError;
+
+module.exports = Conflicted;

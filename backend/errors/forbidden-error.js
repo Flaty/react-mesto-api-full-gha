@@ -1,7 +1,10 @@
-class ForbiddenError  extends Error {
+const { FORBIDDEN_ERROR } = require('./statusCode');
+
+class Forbidden extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = 403;
+    this.statusCode = FORBIDDEN_ERROR;
   }
 }
-module.exports = ForbiddenError ;
+
+module.exports = Forbidden;

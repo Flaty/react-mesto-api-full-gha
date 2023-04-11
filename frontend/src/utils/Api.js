@@ -1,110 +1,94 @@
-// import React from "react";
+import checkResponse from "./utils";
+
 class Api {
-  constructor(config) {
-    this._url = config.url;
-    this._headers = config.headers;
+  constructor(options) {
+    this._url = options.baseUrl;
   }
-  // проверяет есть ли ошибка
-  _checkError(res) {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Статус ошибки: ${res.status}`);
-  }
-  // Загрузка карточек с сервера
-  getInitialCards() {
-    const token = localStorage.getItem("jwt");
-    return fetch(`${this._url}/cards`, {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    }).then((res) => this._checkError(res));
-  }
-  // добавление карточек на страницу
-  postNewCard(data) {
-    const token = localStorage.getItem("jwt");
-    return fetch(`${this._url}/cards`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    }).then((res) => this._checkError(res));
-  }
-  // удаление карточек
-  deleteCard(cardId) {
-    const token = localStorage.getItem("jwt");
-    return fetch(`${this._url}/cards/${cardId}`, {
-      method: "DELETE",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    }).then((res) => this._checkError(res));
-  }
-  // получение данных с сервера
-  getInfo() {
-    const token = localStorage.getItem("jwt");
+
+  setUserInfo(data) {
     return fetch(`${this._url}/users/me`, {
-      method: "GET",
+      method: 'PATCH',
       headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
       },
-    }).then((res) => this._checkError(res));
+      body: JSON.stringify({
+        name: data.name,
+        about: data.about
+      })
+    }).then((res) => checkResponse(res))
   }
-  // изменение данных с сервера
-  patchUserInfo(data) {
-    const token = localStorage.getItem("jwt");
-    return fetch(`${this._url}/users/me`, {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    }).then((res) => this._checkError(res));
-  }
-  // изменение данных аватара
-  patchAvatarInfo(data) {
-    const token = localStorage.getItem("jwt");
+
+  setUserAvatar(data) {
     return fetch(`${this._url}/users/me/avatar`, {
-      method: "PATCH",
+      method: 'PATCH',
       headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data),
-    }).then((res) => this._checkError(res));
+      body: JSON.stringify({
+        avatar: data.avatar
+      })
+    }).then((res) => checkResponse(res))
   }
-  // добавление лайка
-  getLike(cardId) {
-    const token = localStorage.getItem("jwt");
-    return fetch(`${this._url}/cards/${cardId}/likes`, {
-      method: "PUT",
+
+  getUserInfo() {
+    return fetch(`${this._url}/users/me`, {
+      method: 'GET',
       headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    }).then((res) => this._checkError(res));
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+    }).then((res) => checkResponse(res))
   }
-  // удаление лайка
-  deleteLike(cardId) {
-    const token = localStorage.getItem("jwt");
-    return fetch(`${this._url}/cards/${cardId}/likes`, {
-      method: "DELETE",
+
+  getCards() {
+    return fetch(`${this._url}/cards`, {
+      method: 'GET',
       headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+    }).then((res) => checkResponse(res))
+  }
+
+  postCard(data) {
+    return fetch(`${this._url}/cards`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
       },
-    }).then((res) => this._checkError(res));
+      body: JSON.stringify({
+        name: data.name,
+        link: data.link
+      })
+    }).then((res) => checkResponse(res))
+  }
+
+  deleteCard(cardId) {
+    return fetch(`${this._url}/cards/${cardId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },
+    }).then((res) => checkResponse(res))
+  }
+
+  changeLikeCardStatus(cardId, isLiked) {
+    return fetch(`${this._url}/cards/${cardId}/likes`, {
+      method: `${!isLiked ? 'DELETE' : 'PUT'}`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },
+    }).then((res) => checkResponse(res))
   }
 }
+
 const api = new Api({
-   // url: "http://localhost:3005",
-   url: "https://api.juzoo.suzuya.nomoredomains.monster"
+  baseUrl: 'https://api.juzoo.suzuya.nomoredomains.monster'
 });
+
 export default api;
